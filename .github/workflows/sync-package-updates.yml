@@ -2,19 +2,20 @@ on:
   push:
     branches:
       - main
+      - develop
 
 jobs:
   pull-request:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: pull-request
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: 'package-updates'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pr_title: 'Sync Package Updates Branch with Main'
-          pr_body: 'Auto PR to update package-updates branch'
+          pr_body: 'Auto PR to update package-updates branch. github actor: ${{ github.actor }}'
       - name: Enable auto-merge for updating package-updates with main
         run: gh pr merge --auto --merge "$PR_URL"
         env:
