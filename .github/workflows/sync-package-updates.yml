@@ -1,1 +1,27 @@
+on:
+  push:
+    branches:
+      - main
 
+jobs:
+  pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: pull-request
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: 'package-updates'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: 'Sync Package Updates Branch with Main'
+          pr_body: 'Auto PR to update package-updates branch'
+      - name: Enable auto-merge for updating package-updates with main
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Approve PR from main into package-updates branch
+        run: gh pr review $PR_URL --approve -b "**Approving** PR from main into **package-updates** branch"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
